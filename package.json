@@ -1,0 +1,10 @@
+{
+  "name": "model-docs-wiki",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Pilot knowledge base project for 28 model documentation PDFs (llmwiki modeldocs profile)",
+  "dependencies": {
+    "pdf-parse": "^2.4.5"
+  }
+}

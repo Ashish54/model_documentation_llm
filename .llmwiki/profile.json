@@ -1,0 +1,274 @@
+{
+  "schemaVersion": 1,
+  "profileId": "modeldocs",
+  "profileVersion": "0.1.0",
+  "displayName": "Model Documentation Knowledge Base",
+  "entities": {
+    "models": {
+      "directory": "wiki/models",
+      "titleField": "title",
+      "contentTiers": ["title", "summary", "body"],
+      "fields": {
+        "title": { "type": "string", "required": true },
+        "modelId": { "type": "slug" },
+        "owner": { "type": "string" },
+        "domain": {
+          "type": "enum",
+          "enum": ["credit-risk", "market-risk", "liquidity-risk", "pricing", "forecasting", "capital", "stress-testing", "other"]
+        },
+        "version": { "type": "string" },
+        "summary": { "type": "string" },
+        "stage": {
+          "type": "enum",
+          "enum": ["documented", "reviewed", "validated", "approved", "retired"],
+          "required": true
+        }
+      },
+      "lifecycle": {
+        "field": "stage",
+        "initial": "documented",
+        "terminal": ["retired"],
+        "transitions": {
+          "documented": ["reviewed", "retired"],
+          "reviewed": ["validated", "retired"],
+          "validated": ["approved", "retired"],
+          "approved": ["retired"]
+        },
+        "transitionRequirements": {
+          "reviewed": ["summary", "owner"]
+        },
+        "transitionRelationRequirements": {
+          "validated": [
+            {
+              "relationType": "validated-by",
+              "role": "from",
+              "otherTypes": ["validations"],
+              "otherStates": ["passed", "conditionally-passed"],
+              "minCount": 1
+            }
+          ]
+        }
+      }
+    },
+    "methodologies": {
+      "directory": "wiki/methodologies",
+      "titleField": "title",
+      "contentTiers": ["title", "summary", "body"],
+      "fields": {
+        "title": { "type": "string", "required": true },
+        "kind": {
+          "type": "enum",
+          "enum": ["statistical", "machine-learning", "simulation", "deterministic", "expert-judgment", "hybrid"]
+        },
+        "summary": { "type": "string", "required": true },
+        "stage": {
+          "type": "enum",
+          "enum": ["documented", "reviewed", "confirmed", "deprecated"],
+          "required": true
+        }
+      },
+      "lifecycle": {
+        "field": "stage",
+        "initial": "documented",
+        "terminal": ["deprecated"],
+        "transitions": {
+          "documented": ["reviewed"],
+          "reviewed": ["confirmed", "deprecated"],
+          "confirmed": ["deprecated"]
+        }
+      }
+    },
+    "assumptions": {
+      "directory": "wiki/assumptions",
+      "titleField": "title",
+      "contentTiers": ["title", "statement", "body"],
+      "fields": {
+        "title": { "type": "string", "required": true },
+        "statement": { "type": "string", "required": true },
+        "rationale": { "type": "string" },
+        "materiality": { "type": "enum", "enum": ["low", "medium", "high"] },
+        "stage": {
+          "type": "enum",
+          "enum": ["documented", "challenged", "confirmed", "rejected"],
+          "required": true
+        }
+      },
+      "lifecycle": {
+        "field": "stage",
+        "initial": "documented",
+        "terminal": ["confirmed", "rejected"],
+        "transitions": {
+          "documented": ["challenged"],
+          "challenged": ["confirmed", "rejected"]
+        },
+        "transitionRequirements": {
+          "confirmed": ["rationale"]
+        }
+      }
+    },
+    "formulas": {
+      "directory": "wiki/formulas",
+      "titleField": "title",
+      "contentTiers": ["title", "notation", "body"],
+      "fields": {
+        "title": { "type": "string", "required": true },
+        "notation": { "type": "string", "required": true },
+        "variables": { "type": "string[]" },
+        "description": { "type": "string" },
+        "stage": {
+          "type": "enum",
+          "enum": ["documented", "verified"],
+          "required": true
+        }
+      },
+      "lifecycle": {
+        "field": "stage",
+        "initial": "documented",
+        "terminal": ["verified"],
+        "transitions": {
+          "documented": ["verified"]
+        }
+      }
+    },
+    "datasets": {
+      "directory": "wiki/datasets",
+      "titleField": "title",
+      "contentTiers": ["title", "body"],
+      "fields": {
+        "title": { "type": "string", "required": true },
+        "kind": {
+          "type": "enum",
+          "enum": ["internal", "vendor", "market", "reference", "synthetic"]
+        },
+        "frequency": {
+          "type": "enum",
+          "enum": ["real-time", "daily", "weekly", "monthly", "quarterly", "annual", "ad-hoc"]
+        },
+        "stage": {
+          "type": "enum",
+          "enum": ["documented", "profiled", "approved"],
+          "required": true
+        }
+      },
+      "lifecycle": {
+        "field": "stage",
+        "initial": "documented",
+        "terminal": ["approved"],
+        "transitions": {
+          "documented": ["profiled"],
+          "profiled": ["approved"]
+        }
+      }
+    },
+    "validations": {
+      "directory": "wiki/validations",
+      "titleField": "title",
+      "contentTiers": ["title", "findingsSummary", "body"],
+      "fields": {
+        "title": { "type": "string", "required": true },
+        "validator": { "type": "string" },
+        "validationDate": { "type": "date" },
+        "scope": { "type": "string" },
+        "findingsSummary": { "type": "string" },
+        "verdict": {
+          "type": "enum",
+          "enum": ["pending", "passed", "conditionally-passed", "failed"],
+          "required": true
+        }
+      },
+      "lifecycle": {
+        "field": "verdict",
+        "initial": "pending",
+        "terminal": ["passed", "conditionally-passed", "failed"],
+        "transitions": {
+          "pending": ["passed", "conditionally-passed", "failed"]
+        },
+        "transitionRequirements": {
+          "passed": ["findingsSummary", "validator"],
+          "conditionally-passed": ["findingsSummary", "validator"],
+          "failed": ["findingsSummary", "validator"]
+        }
+      }
+    },
+    "limitations": {
+      "directory": "wiki/limitations",
+      "titleField": "title",
+      "contentTiers": ["title", "body"],
+      "fields": {
+        "title": { "type": "string", "required": true },
+        "severity": { "type": "enum", "enum": ["low", "medium", "high"] },
+        "mitigation": { "type": "string" },
+        "stage": {
+          "type": "enum",
+          "enum": ["identified", "mitigated", "accepted"],
+          "required": true
+        }
+      },
+      "lifecycle": {
+        "field": "stage",
+        "initial": "identified",
+        "terminal": ["mitigated", "accepted"],
+        "transitions": {
+          "identified": ["mitigated", "accepted"]
+        },
+        "transitionRequirements": {
+          "mitigated": ["mitigation"]
+        }
+      }
+    }
+  },
+  "relations": {
+    "uses-methodology": {
+      "from": ["models"],
+      "to": ["methodologies"],
+      "direction": "directed"
+    },
+    "relies-on-assumption": {
+      "from": ["models", "methodologies"],
+      "to": ["assumptions"],
+      "direction": "directed"
+    },
+    "defined-by-formula": {
+      "from": ["models", "methodologies"],
+      "to": ["formulas"],
+      "direction": "directed"
+    },
+    "consumes-data": {
+      "from": ["models"],
+      "to": ["datasets"],
+      "direction": "directed"
+    },
+    "validated-by": {
+      "from": ["models"],
+      "to": ["validations"],
+      "direction": "directed"
+    },
+    "has-limitation": {
+      "from": ["models", "methodologies"],
+      "to": ["limitations"],
+      "direction": "directed"
+    }
+  },
+  "workflows": {
+    "model-onboarding": {
+      "stages": [
+        {
+          "id": "draft-model",
+          "reads": ["methodologies", "assumptions"],
+          "writes": ["models"]
+        },
+        {
+          "id": "link-evidence",
+          "reads": ["models", "formulas", "datasets", "limitations"],
+          "writes": ["models"]
+        },
+        {
+          "id": "approve-model",
+          "reads": ["models", "validations"],
+          "writes": ["models"],
+          "gate": "trust:high"
+        }
+      ]
+    }
+  }
+}
