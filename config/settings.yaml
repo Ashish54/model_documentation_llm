@@ -1,0 +1,39 @@
+# Environment-specific configuration for modelkb.
+# Precedence: process env (KB_*) > .env > this file > code defaults.
+environment: dev
+
+paths:
+  input_dir: var/input            # local mirror of the SharePoint folder
+  archive_dir: var/archive        # immutable, sha256-addressed evidence
+  extractions_dir: var/extractions
+  knowledge_dir: knowledge
+  output_repo_path: var/output
+
+database:
+  # PostgreSQL in real environments, e.g.:
+  # url: postgresql+psycopg://modelkb:CHANGE_ME@localhost:5432/modelkb
+  url: sqlite:///var/modelkb.db   # local development / tests only
+  echo: false
+
+vllm:
+  backend: chat_only              # chat_only | direct
+  base_url: http://127.0.0.1:8000/v1
+  model: qwen3-32b-instruct
+  timeout_s: 600
+  max_retries: 2
+  temperature: 0.0
+
+code:
+  # repo_path: /path/to/local/clone   # takes precedence over repo_url
+  # repo_url: git@company.example:models/model-library.git
+  git_tag: v1.0.0                    # THE configured snapshot tag
+  workdir: var/code-repo
+
+sharepoint:
+  enabled: false                     # scaffold — see src/modelkb/sources/sharepoint.py
+  # site_url: https://tenant.sharepoint.com/sites/models
+  # drive_path: /Model Documentation
+  poll_interval_s: 900
+
+schema:
+  active_version: null               # set after a proposed schema is validated
