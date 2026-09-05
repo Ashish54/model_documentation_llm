@@ -1,0 +1,43 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Model Docs Chat</title>
+<style>
+  body { max-width: 850px; margin: 2rem auto; padding: 0 1rem; font: 16px system-ui, sans-serif; }
+  #messages { display: grid; gap: .8rem; margin: 1rem 0; }
+  article { padding: .8rem 1rem; border-radius: .6rem; white-space: pre-wrap; }
+  .user { background: #e7f0ff; } .assistant { background: #f1f1f1; }
+  form { display: flex; gap: .5rem; } input { flex: 1; padding: .7rem; font-size: 1rem; }
+  button { padding: .7rem 1rem; } small { display: block; margin-top: .5rem; color: #666; }
+</style>
+<h1>Model Docs Chat</h1>
+<div id="messages"></div>
+<form><input id="input" autofocus placeholder="Ask about the model documentation…"><button>Send</button></form>
+<script>
+const messages = document.querySelector("#messages");
+const input = document.querySelector("#input");
+const history = [];
+function add(role, content) {
+  const article = document.createElement("article");
+  article.className = role;
+  article.textContent = content;
+  messages.append(article);
+  article.scrollIntoView({ behavior: "smooth" });
+}
+document.querySelector("form").addEventListener("submit", async event => {
+  event.preventDefault();
+  const message = input.value.trim();
+  if (!message) return;
+  input.value = ""; add("user", message);
+  try {
+    const response = await fetch("/api/chat", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({ message, history })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || "Request failed");
+    add("assistant", data.answer);
+    history.push({ role: "user", content: message }, { role: "assistant", content: data.answer });
+  } catch (error) { add("assistant", `Error: ${error.message}`); }
+});
+</script>
