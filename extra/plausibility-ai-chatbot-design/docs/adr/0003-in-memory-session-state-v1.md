@@ -1,3 +1,0 @@
-# Keep conversation history in-memory for v1, defer durable session storage
-
-The AIaaS chat API is stateless, so the orchestrator must own conversation history. For v1, sessions live in process memory only — a user who restarts the service or hits a different replica starts fresh. This is a deliberate trade-off: durable session storage (Redis/DB) adds deployment complexity and a new data store for marginal benefit at the validation stage, since the primary use case is single-sitting comparisons. If usage shows users returning to past conversations, durable storage becomes a follow-on work item.

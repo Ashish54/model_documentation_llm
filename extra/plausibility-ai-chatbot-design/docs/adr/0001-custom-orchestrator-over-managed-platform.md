@@ -1,3 +1,0 @@
-# Use a custom Python orchestrator instead of a managed agent platform
-
-The chatbot needs deterministic tool routing (the LLM must never compute comparisons itself), an allowlist-only tool registry, and strict scoping to the scenario-comparison domain. Managed platforms (LangGraph, Semantic Kernel, Azure AI Foundry Agent Service, Copilot Studio) either don't guarantee this level of control or route inference through external models, conflicting with the requirement that all inference goes through the internal AIaaS gateway. We therefore build the orchestrator as a plain Python service using the OpenAI-compatible `tools=` function-calling API, accepting the maintenance cost of owning the loop in exchange for full control over tool dispatch, scoping, and auditability.
