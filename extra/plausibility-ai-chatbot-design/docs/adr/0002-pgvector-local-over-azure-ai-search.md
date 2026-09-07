@@ -1,0 +1,3 @@
+# Use local pgvector for the grounding knowledge index instead of Azure AI Search
+
+The knowledge base index needs vector + metadata + ACL filtering. Azure AI Search provides this out of the box but adds an external Azure dependency and pushes ACL sync into a proprietary security-trimming model. pgvector hosted locally keeps the entire retrieval stack inside the internal network, uses standard Postgres tooling the team already knows, and lets ACL filtering be expressed as ordinary SQL predicates. We accept the operational cost of self-hosting and hand-rolling the ACL filter in exchange for full control and no external cloud dependency for retrieval.
